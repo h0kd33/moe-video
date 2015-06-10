@@ -20,6 +20,7 @@
                 <div id="placeholder">
                     <a id="videoLink" href="#">YouTube 低調推 8K 影片，但你的電腦跑得動嗎?YouTube 低調推 8K 影片，但你的電腦跑得動嗎?</a>
                     <iron-icon id="playIcon" icon="av:play-arrow"> </iron-icon>
+                    <paper-ripple style="pointer-events: none;"></paper-ripple>
                 </div>
                 <google-youtube width="100%" height="100%" videoID="tntOCGkgt98"></google-youtube>
             </div>
@@ -37,7 +38,7 @@
                             <paper-item class="chip" on-click="_toggleSelection">
                                 <iron-image class="chip-image" src="http://lorempixel.com/80/60/cats/"> </iron-image>
                                 <p class="chip-title flex">{{item.title}}</p>
-                                <paper-ripple class="ripple" recenters style="pointer-events: none;"></paper-ripple>
+                                <paper-ripple recenters style="pointer-events: none;"></paper-ripple>
                             </paper-item>
                         </template>
                     </paper-header-panel>
