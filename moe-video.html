@@ -35,10 +35,18 @@
 
     #listToolbar {
         --paper-toolbar-background: none;
-        --paper-toolbar-color: black;        
-        --paper-toolbar: {
-            color: red !important;
-        }
+        --paper-toolbar-color: black;   
+        height: 30px;             
+    }
+    #listToolbar ::content .toolbar-tools {
+        height: 30px;
+    }
+    #listLength::before{
+        content: '/';
+        padding: 0 4px;
+    }
+    .chip.selected {
+        font-weight: bold;
     }
     </style>
     <template>
@@ -48,11 +56,11 @@
                 <paper-header-panel class="flex">
                     <paper-toolbar id="listToolbar">
                         <paper-icon-button icon="av:skip-previous"> </paper-icon-button>
-                        <span>{{videoSelected}}</span><span>&nbsp/&nbsp</span><span>{{listLength}}</span>
+                        <span>{{videoSelected}}</span><span id="listLength">{{listLength}}</span>
                         <paper-icon-button icon="av:skip-next"> </paper-icon-button>
                     </paper-toolbar>
                     <template is="dom-repeat" items="{{datas}}" id="videoList">
-                        <paper-item class="flex" on-click="_toggleSelection">
+                        <paper-item class="chip flex" on-click="_toggleSelection">
                             <iron-image src="http://lorempixel.com/80/60/cats/"> </iron-image>
                             <p id="videoListTitle" class="flex">{{item.title}}</p>
                         </paper-item>
@@ -88,6 +96,9 @@ Polymer({
         videoSelected: {
             type: Number,
             value: 0
+        },
+        selectedListItem: {
+            type: Object
         }
     },
 
@@ -97,7 +108,9 @@ Polymer({
     },
     _toggleSelection: function(e) {
         var dom = this.$.videoList;
-        var index = dom.indexForElement(e.target);        
+        var index = dom.indexForElement(e.target);                
+        this.selectedListItem? this.classFollows('selected', e.target, this.selectedListItem) : e.target.toggleClass('selected');        
+        this.selectedListItem = e.target;        
         this.$.selector.select(index);
     },
     _getListLength: function() {
