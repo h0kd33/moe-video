@@ -108,9 +108,9 @@ Polymer({
     },
     _toggleSelection: function(e) {
         var dom = this.$.videoList;
-        var index = dom.indexForElement(e.target);                
-        this.selectedListItem? this.classFollows('selected', e.target, this.selectedListItem) : e.target.toggleClass('selected');        
-        this.selectedListItem = e.target;        
+        var index = dom.indexForElement(e.currentTarget);                
+        this.selectedListItem? this.classFollows('selected', e.currentTarget, this.selectedListItem) : e.currentTarget.toggleClass('selected');        
+        this.selectedListItem = e.currentTarget;        
         this.$.selector.select(index);
     },
     _getListLength: function() {
