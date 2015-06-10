@@ -84,6 +84,7 @@ Polymer({
         return 'width:' + width + '; height:' + height;
     },
     _toggleSelection: function(e) {
+        if( e.currentTarget === this.selectedListItem ) return;
         var dom = this.$$('#videoList');
         var index = dom.indexForElement(e.currentTarget);
         this.selectedListItem ? this.classFollows('selected', e.currentTarget, this.selectedListItem) : e.currentTarget.toggleClass('selected');
