@@ -85,23 +85,25 @@
     <template>
         <div id="container" style$="{{_computeContainerStyle(width, height)}}">
             <google-youtube width="100%" height="100%" videoID="tntOCGkgt98"></google-youtube>
-            <div id="list" class="layout vertical">
-                <paper-header-panel class="flex">
-                    <paper-toolbar id="listToolbar">
-                        <paper-icon-button icon="av:skip-previous"> </paper-icon-button>
-                        <span>{{videoSelected}}</span><span id="listLength">{{listLength}}</span>
-                        <paper-icon-button icon="av:skip-next"> </paper-icon-button>
-                    </paper-toolbar>
-                    <template is="dom-repeat" items="{{datas}}" id="videoList">
-                        <paper-item class="chip" on-click="_toggleSelection">
-                            <iron-image class="chip-image" src="http://lorempixel.com/80/60/cats/"> </iron-image>
-                            <p class="chip-title flex">{{item.title}}</p>
-                            <paper-ripple class="ripple" recenters style="pointer-events: none;"></paper-ripple>
-                        </paper-item>
-                    </template>
-                </paper-header-panel>
-            </div>
-            <array-selector id="selector" items="{{datas}}" selected="{{videoSelected}}" toggle> </array-selector>
+            <template is="dom-if" if="{{listToggle}}">
+                <div id="list" class="layout vertical">
+                    <paper-header-panel class="flex">
+                        <paper-toolbar id="listToolbar">
+                            <paper-icon-button icon="av:skip-previous"> </paper-icon-button>
+                            <span>{{videoSelected}}</span><span id="listLength">{{listLength}}</span>
+                            <paper-icon-button icon="av:skip-next"> </paper-icon-button>
+                        </paper-toolbar>
+                        <template is="dom-repeat" items="{{datas}}" id="videoList">
+                            <paper-item class="chip" on-click="_toggleSelection">
+                                <iron-image class="chip-image" src="http://lorempixel.com/80/60/cats/"> </iron-image>
+                                <p class="chip-title flex">{{item.title}}</p>
+                                <paper-ripple class="ripple" recenters style="pointer-events: none;"></paper-ripple>
+                            </paper-item>
+                        </template>
+                    </paper-header-panel>
+                </div>
+                <array-selector id="selector" items="{{datas}}" selected="{{videoSelected}}" toggle> </array-selector>
+            </template>
         </div>
     </template>
 </dom-module>
@@ -121,7 +123,8 @@ Polymer({
         },
         listToggle: {
             type: Boolean,
-            value: false
+            value: false,
+            notify: true
         },
         listLength: {
             type: Number,
@@ -141,14 +144,14 @@ Polymer({
         return 'width:' + width + '; height:' + height;
     },
     _toggleSelection: function(e) {
-        var dom = this.$.videoList;
+        var dom = this.$$('#videoList');
         var index = dom.indexForElement(e.currentTarget);
         this.selectedListItem ? this.classFollows('selected', e.currentTarget, this.selectedListItem) : e.currentTarget.toggleClass('selected');
         this.selectedListItem = e.currentTarget;
-        this.$.selector.select(index);
+        this.$$("#selector").select(index);
     },
     _getListLength: function() {
-        this.listLength = this.datas.length;
+        return this.listLength = this.datas.length;
     },
     // Element Lifecycle
     ready: function() {
@@ -176,7 +179,10 @@ Polymer({
         }, {
             title: 'h'
         }];
-        this._getListLength();
+
+        if(this._getListLength() > 1) {
+            this.listToggle = true;
+        }
     },
 
     attached: function() {
