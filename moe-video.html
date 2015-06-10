@@ -17,6 +17,10 @@
     :host {
         display: inline-block;
         box-sizing: border-box;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        -o-user-select: none;
     }
     
     #container {
@@ -50,10 +54,11 @@
     
     .chip {
         position: relative;
-        padding: 0 5px;
+        padding: 0 5px 0 5px;
         cursor: pointer;
         height: 60px;
         overflow: hidden;
+        margin-right: -12px !important;
     }
     
     .chip + .chip {
@@ -62,13 +67,16 @@
     
     .chip.selected {
         font-weight: bold;
+        border: 3px solid gray;
+        border-width: 0 0 0 5px;
+        padding-left: 0;  
     }
     
     .chip-title {
         box-sizing: border-box;
         font-size: 12px;
         line-height: 18px;
-        margin: 0;
+        margin: 0 !important;
         padding: 4px 2px;        
         max-height: 60px;
         overflow: hidden;
@@ -87,7 +95,7 @@
             <google-youtube width="100%" height="100%" videoID="tntOCGkgt98"></google-youtube>
             <template is="dom-if" if="{{listToggle}}">
                 <div id="list" class="layout vertical">
-                    <paper-header-panel class="flex">
+                    <paper-header-panel mode="waterfall" class="flex">
                         <paper-toolbar id="listToolbar">
                             <paper-icon-button icon="av:skip-previous"> </paper-icon-button>
                             <span>{{videoSelected}}</span><span id="listLength">{{listLength}}</span>
