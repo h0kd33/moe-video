@@ -85,7 +85,7 @@ Polymer({
         return 'width:' + width + '; height:' + height;
     },
     _toggleSelection: function(e) {
-        if( e.currentTarget === this.selectedListItem ) return;
+        if (e.currentTarget === this.selectedListItem) return;
         var dom = this.$$('#videoList');
         var index = dom.indexForElement(e.currentTarget);
         this.selectedListItem ? this.classFollows('selected', e.currentTarget, this.selectedListItem) : e.currentTarget.toggleClass('selected');
@@ -94,6 +94,25 @@ Polymer({
     },
     _getListLength: function() {
         return this.listLength = this.datas.length;
+    },
+    _ontrack: function(event) {
+        var track = event.detail;
+        if (track.state === 'start') {
+            this._trackStart(track);
+        } else if (track.state === 'track') {
+            this._trackMove(track);
+        } else if (track.state === 'end') {
+            this._trackEnd(track);
+        }
+    },
+
+    _trackStart: function(track) {
+    },
+
+    _trackMove: function(track) {
+    },
+
+    _trackEnd: function(track) {
     },
     // Element Lifecycle
     ready: function() {
