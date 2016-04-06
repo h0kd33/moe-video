@@ -10,6 +10,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../bower_components/iron-icons/av-icons.html">
+<link rel="import" href="../bower_components/iron-icons/notification-icons.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
@@ -31,6 +32,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <style include="webkit-scrollbar iron-flex iron-flex-alignment iron-positioning">
             :host {
                 display: inline-block;
+                background-color: black;
                 box-sizing: border-box;
                 -webkit-user-select: none;
                 -moz-user-select: none;
@@ -204,7 +206,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
                 <div id="placeholder" class="fit" hidden$="[[!placeholder]]" on-tap="_handleHolderTap" style$="{{_computeHolderStyle(selectedVideoIndex)}}">
                     <a id="videoLink" href="#">{{_computeHolderTitle(selectedVideoIndex)}}</a>
-                    <iron-icon id="playIcon" icon="av:play-arrow"> </iron-icon>
+                    <iron-icon id="playIcon" icon$="{{_computePlayIcon(data)}}"> </iron-icon>
                     <paper-ripple style="pointer-events: none;"></paper-ripple>
                 </div>
                 <template is="dom-if" if="[[playing]]">
@@ -355,6 +357,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     case 'stop':
                         this.stop();
                         break;
+                }
+            },
+            _computePlayIcon: function(data) {
+                if( !data[0] || data === undefined ){
+                    return 'notification:wifi';
+                } else {
+
+                    return 'av:play-arrow';
                 }
             },
             _computeContainerStyle: function(width, height) {
