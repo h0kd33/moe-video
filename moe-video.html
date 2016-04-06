@@ -1,165 +1,299 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/google-youtube/google-youtube.html">
+
 <link rel="import" href="../bower_components/iron-icons/av-icons.html">
+<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../bower_components/iron-image/iron-image.html">
-<link rel="import" href="../bower_components/paper-item/paper-item.html">
+
 <link rel="import" href="../bower_components/paper-ripple/paper-ripple.html">
 <link rel="import" href="../bower_components/paper-header-panel/paper-header-panel.html">
 <link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
-<link rel="import" href="../bower_components/paper-item/paper-item-body.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../moe-style/moe-style.html">
+
+<link rel="import" href="../bower_components/google-youtube/google-youtube.html">
+<link rel="import" href="webkit-scrollbar.html">
+
 <dom-module id="moe-video">
-    <link rel="stylesheet" type="text/css" href="-webkit-scroller.css">
-    <link rel="import" type="css" href="style.css">
     <template>
-        <div id="container" style$="{{_computeContainerStyle(width, height)}}">
-            <div id="video">
-                <div id="placeholder">
+        <style include="webkit-scrollbar iron-flex iron-flex-alignment iron-positioning">
+            :host {
+                display: inline-block;
+                box-sizing: border-box;
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+                -webkit-touch-callout: none;
+            }
+
+            #container {
+                margin: 0;
+                @apply(--layout-horizontal);
+            }
+
+            #video {
+
+            }
+            #video google-youtube {
+                --google-youtube-container: {
+                    height: 100%;
+                    width: 100%;
+                }
+            }
+            #videoLink {
+                position: absolute;
+                font-size: 15px;
+                color: rgb(200, 200, 200);
+                left: 0;
+                top: 0;
+                right: 0;
+                padding: 10px 10px 0 10px;
+                line-height: 1.5;
+                text-decoration: none;
+            }
+
+            #videoLink:hover {
+                text-decoration: underline;
+            }
+
+            #placeholder {
+                position: absolute;
+                cursor: pointer;
+                left: 0;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 1);
+                /* Old Browsers */
+
+                background: -moz-linear-gradient(top, rgba(0, 0, 0, 1) 0%, rgba(246, 246, 246, 0.47) 53%, rgba(255, 255, 255, 0) 100%);
+                /* FF3.6+ */
+
+                background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(0, 0, 0, 1)), color-stop(53%, rgba(246, 246, 246, 0.47)), color-stop(100%, rgba(255, 255, 255, 0)));
+                /* Chrome, Safari4+ */
+
+                background: -webkit-linear-gradient(top, rgba(0, 0, 0, 1) 0%, rgba(246, 246, 246, 0.47) 53%, rgba(255, 255, 255, 0) 100%);
+                /* Chrome10+,Safari5.1+ */
+
+                background: -o-linear-gradient(top, rgba(0, 0, 0, 1) 0%, rgba(246, 246, 246, 0.47) 53%, rgba(255, 255, 255, 0) 100%);
+                /* Opera 11.10+ */
+
+                background: -ms-linear-gradient(top, rgba(0, 0, 0, 1) 0%, rgba(246, 246, 246, 0.47) 53%, rgba(255, 255, 255, 0) 100%);
+                /* IE 10+ */
+
+                background: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(246, 246, 246, 0.47) 53%, rgba(255, 255, 255, 0) 100%);
+                /* W3C */
+
+                filter: progid: DXImageTransform.Microsoft.gradient( startColorstr='#000000', endColorstr='#ffffff', GradientType=0);
+                /* IE6-9 */
+            }
+
+            #playIcon {
+                position: absolute;
+                color: rgba(255, 255, 255, 1);
+                width: 6em;
+                height: 6em;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+            }
+
+            #list {
+                width: 250px;
+                min-height: 250px;
+                background: rgba(50, 50, 50, 1);
+                color: rgb(200, 200, 200);
+            }
+
+            #listToolbar {
+                --paper-toolbar-background: none;
+                --paper-toolbar-color: rgb(200, 200, 200);
+                height: 30px;
+            }
+
+            #listToolbar::content .toolbar-tools {
+                height: 30px;
+            }
+
+            #listLength::before {
+                content: '/';
+                padding: 0 4px;
+            }
+
+            .chip {
+                position: relative;
+                box-sizing: border-box;
+                padding: 0 5px 0 5px;
+                cursor: pointer;
+                height: 60px;
+                overflow: hidden;
+            }
+
+            .chip + .chip {
+                margin-top: 3px;
+            }
+
+            .chip.iron-selected {
+                color: white;
+                background: rgba(255, 255, 255, 0.1);
+                border: 3px solid gray;
+                border-width: 0 0 0 5px;
+                padding-left: 0;
+                transition: background 0.4s linear;
+            }
+
+            .chip:hover {
+                background: rgba(0, 0, 0, 0.1);
+            }
+
+            .chip.iron-selected:hover {
+                background: rgba(255, 255, 255, 0.1);
+            ;
+            }
+
+            .chip-title {
+                box-sizing: border-box;
+                font-size: 12px;
+                line-height: 18px;
+                margin: 0 !important;
+                padding: 4px 5px;
+                max-height: 60px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .chip-image {
+                width: 80px;
+                height: 60px;
+            }
+
+        </style>
+        <div id="container" class="layout horizontal" style$="{{_computeContainerStyle(width, height)}}">
+            <div id="video" class="flex relative">
+                <div id="placeholder" class="fit">
                     <a id="videoLink" href="#">YouTube 低調推 8K 影片，但你的電腦跑得動嗎?YouTube 低調推 8K 影片，但你的電腦跑得動嗎?</a>
                     <iron-icon id="playIcon" icon="av:play-arrow"> </iron-icon>
                     <paper-ripple style="pointer-events: none;"></paper-ripple>
                 </div>
-                <google-youtube width="100%" height="100%" videoID="tntOCGkgt98"></google-youtube>
+                <google-youtube height="100%" width="100%" class="fit" video-id="-rSW74L-XMA"></google-youtube>
             </div>
             <template is="dom-if" if="{{listToggle}}">
                 <div id="list" class="layout vertical">
-                    <paper-header-panel id="listPanel" mode="waterfall" class="flex">
-                        <paper-toolbar id="listToolbar" class="layout horizontal end-justified">
-                            <paper-icon-button icon="av:skip-previous"> </paper-icon-button>
-                            <div>
-                                <span>{{videoSelected}}</span><span id="listLength">{{listLength}}</span>
-                            </div>
-                            <paper-icon-button icon="av:skip-next"> </paper-icon-button>
-                        </paper-toolbar>
-                        <template is="dom-repeat" items="{{datas}}" id="videoList">
-                            <paper-item class="chip" on-click="_toggleSelection">
-                                <iron-image class="chip-image" src="http://lorempixel.com/80/60/cats/"> </iron-image>
-                                <p class="chip-title flex">{{item.title}}</p>
-                                <paper-ripple recenters style="pointer-events: none;"></paper-ripple>
-                            </paper-item>
-                        </template>
-                    </paper-header-panel>
+                    <paper-toolbar id="listToolbar" class="layout horizontal end-justified">
+                        <paper-icon-button icon="av:skip-previous"> </paper-icon-button>
+                        <div>
+                            <span>{{selectedVideoItem}}</span><span id="listLength">{{listLength}}</span>
+                        </div>
+                        <paper-icon-button icon="av:skip-next"> </paper-icon-button>
+                    </paper-toolbar>
+                    <div class="layout flex vertical scroll">
+                        <iron-selector selected="{{selectedVideoItem}}">
+                            <template is="dom-repeat" id="videoList" items="[[data]]" as="item">
+                                <div class="chip layout horizontal" data-index$="[[index]]">
+                                    <iron-image  src="http://img.youtube.com/vi/-rSW74L-XMA/default.jpg" style="width: 80px; height: 60px;" sizing="cover"></iron-image>
+                                    <div class="chip-title flex">[[item.title]]</div>
+                                    <paper-ripple recenters style="pointer-events: none;"></paper-ripple>
+                                </div>
+                            </template>
+                        </iron-selector>
+                    </div>
                 </div>
-                <array-selector id="selector" items="{{datas}}" selected="{{videoSelected}}" toggle> </array-selector>
             </template>
         </div>
     </template>
+    <script>
+    (function() {
+        'use strict';
+
+        Polymer({
+            is: 'moe-video',
+
+            properties: {
+                data: {
+                    type: Array,
+                    value: function() { return [];}
+                },
+                width: {
+                    type: String,
+                    value: '730px'
+                },
+                height: {
+                    type: String,
+                    value: '360px'
+                },
+                listToggle: {
+                    type: Boolean,
+                    value: false,
+                    notify: true
+                },
+                listLength: {
+                    type: Number,
+                    value: 0
+                },
+                selectedVideoItem: {
+                    type: Object,
+                    value: function() { return {}}
+                }
+            },
+
+
+            _computeContainerStyle: function(width, height) {
+                return 'width:' + width + '; height:' + height;
+            },
+            _getListLength: function() {
+                return this.listLength = this.data.length;
+            },
+            // Element Lifecycle
+            ready: function() {
+                // `ready` is called after all elements have been configured, but
+                // propagates bottom-up. This element's children are ready, but parents
+                // are not.
+                //
+                // This is the point where you should make modifications to the DOM (when
+                // necessary), or kick off any processes the element wants to perform.
+
+                this.data = [{
+                    title: '別再用長射程的狗角了CHAOS有夠難打 ',
+                    videoSrc: 'https://www.youtube.com/watch?v=-rSW74L-XMA'
+                }, {
+                    title: '還有人要連嗎ლ(́◉◞౪◟◉‵ლ)',
+                    videoSrc: 'https://www.youtube.com/watch?v=-rSW74L-XMA'
+                }, {
+                    title: '是不會放1.4的載點喔網路上都死檔了 ',
+                    videoSrc: 'https://www.youtube.com/watch?v=-rSW74L-XMA'
+                }, {
+                    title: 'YouTube 低調推 8K 影片，但你的電腦跑得動嗎?',
+                    videoSrc: 'https://www.youtube.com/watch?v=-rSW74L-XMA'
+                }, {
+                    title: '已經有一種電視叫做Digital Media TV了，普遍被做成4K，灌了Android可以看youtube和facebook。',
+                    videoSrc: 'https://www.youtube.com/watch?v=-rSW74L-XMA'
+                }, {
+                    title: 'f',
+                    videoSrc: 'https://www.youtube.com/watch?v=-rSW74L-XMA'
+                }, {
+                    title: 'g',
+                    videoSrc: 'https://www.youtube.com/watch?v=-rSW74L-XMA'
+                }, {
+                    title: 'h',
+                    videoSrc: 'https://www.youtube.com/watch?v=-rSW74L-XMA'
+                }];
+
+                if (this._getListLength() > 1) {
+                    this.listToggle = true;
+                }
+            }
+        });
+    })();
+    </script>
 </dom-module>
-<script>
-Polymer({
-
-    is: 'moe-video',
-
-    properties: {
-        width: {
-            type: String,
-            value: '730px'
-        },
-        height: {
-            type: String,
-            value: '360px'
-        },
-        listToggle: {
-            type: Boolean,
-            value: false,
-            notify: true
-        },
-        listLength: {
-            type: Number,
-            value: 0,
-        },
-        videoSelected: {
-            type: Number,
-            value: 0
-        },
-        selectedListItem: {
-            type: Object
-        }
-    },
-
-
-    _computeContainerStyle: function(width, height) {
-        return 'width:' + width + '; height:' + height;
-    },
-    _toggleSelection: function(e) {
-        if (e.currentTarget === this.selectedListItem) return;
-        var dom = this.$$('#videoList');
-        var index = dom.indexForElement(e.currentTarget);
-        this.selectedListItem ? this.classFollows('selected', e.currentTarget, this.selectedListItem) : e.currentTarget.toggleClass('selected');
-        this.selectedListItem = e.currentTarget;
-        this.$$("#selector").select(index);
-    },
-    _getListLength: function() {
-        return this.listLength = this.datas.length;
-    },
-    _ontrack: function(event) {
-        var track = event.detail;
-        if (track.state === 'start') {
-            this._trackStart(track);
-        } else if (track.state === 'track') {
-            this._trackMove(track);
-        } else if (track.state === 'end') {
-            this._trackEnd(track);
-        }
-    },
-
-    _trackStart: function(track) {
-    },
-
-    _trackMove: function(track) {
-    },
-
-    _trackEnd: function(track) {
-    },
-    // Element Lifecycle
-    ready: function() {
-        // `ready` is called after all elements have been configured, but
-        // propagates bottom-up. This element's children are ready, but parents
-        // are not.
-        //
-        // This is the point where you should make modifications to the DOM (when
-        // necessary), or kick off any processes the element wants to perform.
-
-        this.datas = [{
-            title: '別再用長射程的狗角了CHAOS有夠難打 '
-        }, {
-            title: '還有人要連嗎ლ(́◉◞౪◟◉‵ლ)'
-        }, {
-            title: '是不會放1.4的載點喔網路上都死檔了 '
-        }, {
-            title: 'YouTube 低調推 8K 影片，但你的電腦跑得動嗎?'
-        }, {
-            title: '已經有一種電視叫做Digital Media TV了，普遍被做成4K，灌了Android可以看youtube和facebook。'
-        }, {
-            title: 'f'
-        }, {
-            title: 'g'
-        }, {
-            title: 'h'
-        }];
-
-        if (this._getListLength() > 1) {
-            this.listToggle = true;
-        }
-    },
-
-    attached: function() {
-        // `attached` fires once the element and its parents have been inserted
-        // into a document.
-        //
-        // This is a good place to perform any work related to your element's
-        // visual state or active behavior (measuring sizes, beginning animations,
-        // loading resources, etc).
-    },
-
-    detached: function() {
-        // The analog to `attached`, `detached` fires when the element has been
-        // removed from a document.
-        //
-        // Use this to clean up anything you did in `attached`.
-    }
-});
-</script>
