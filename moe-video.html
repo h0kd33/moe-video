@@ -10,10 +10,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../bower_components/iron-icons/av-icons.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
 
 <link rel="import" href="../bower_components/paper-ripple/paper-ripple.html">
 <link rel="import" href="../bower_components/paper-header-panel/paper-header-panel.html">
@@ -41,7 +43,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 margin: 0;
                 @apply(--layout-horizontal);
             }
-
+            #container.layout.vertical {
+                @apply(--layout-vertical);
+            }
             #video {
 
             }
@@ -74,6 +78,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 right: 0;
                 top: 0;
                 bottom: 0;
+                background-color: rgba(0, 0, 0, 1);
+                background-size: 100%;
+                background-repeat: no-repeat;
+                background-position: center center;
+            }
+            #placeholder::before {
+                content: '';
+                display: block;
+                position: absolute;
+                top: 0; right: 0; bottom: 0; left: 0;
                 background: rgba(0, 0, 0, 1);
                 /* Old Browsers */
 
@@ -85,9 +99,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
                 background: -webkit-linear-gradient(top, rgba(0, 0, 0, 1) 0%, rgba(246, 246, 246, 0.47) 53%, rgba(255, 255, 255, 0) 100%);
                 /* Chrome10+,Safari5.1+ */
-
-                background: -o-linear-gradient(top, rgba(0, 0, 0, 1) 0%, rgba(246, 246, 246, 0.47) 53%, rgba(255, 255, 255, 0) 100%);
-                /* Opera 11.10+ */
 
                 background: -ms-linear-gradient(top, rgba(0, 0, 0, 1) 0%, rgba(246, 246, 246, 0.47) 53%, rgba(255, 255, 255, 0) 100%);
                 /* IE 10+ */
@@ -179,29 +190,42 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
         </style>
-        <div id="container" class="layout horizontal" style$="{{_computeContainerStyle(width, height)}}">
+
+        <iron-media-query query="(max-width: 600px)" query-matches="{{mobile}}"></iron-media-query>
+        <iron-ajax
+                url="https://www.googleapis.com/youtube/v3/videos"
+                params='{"id"="WraWs2qMgdY", "key"="apiKey", "fields"="items(snippet(title))", "part"="snippet"}'
+                handle-as="json"
+                last-response="{{youtubeData}}">
+        </iron-ajax>
+
+        <div id="container" class$="{{_computeContainerClass(mobile)}}" style$="{{_computeContainerStyle(width, height)}}">
             <div id="video" class="flex relative">
-                <div id="placeholder" class="fit">
-                    <a id="videoLink" href="#">YouTube 低調推 8K 影片，但你的電腦跑得動嗎?YouTube 低調推 8K 影片，但你的電腦跑得動嗎?</a>
+
+                <div id="placeholder" class="fit" hidden$="[[!placeholder]]" on-tap="_handleHolderTap" style$="{{_computeHolderStyle(selectedVideoIndex)}}">
+                    <a id="videoLink" href="#">{{_computeHolderTitle(selectedVideoIndex)}}</a>
                     <iron-icon id="playIcon" icon="av:play-arrow"> </iron-icon>
                     <paper-ripple style="pointer-events: none;"></paper-ripple>
                 </div>
-                <google-youtube height="100%" width="100%" class="fit" video-id="-rSW74L-XMA"></google-youtube>
+                <template is="dom-if" if="[[playing]]">
+                    <google-youtube id="youtube" height="100%" width="100%" class="fit" video-id="{{playingVideoId}}" autoplay="1"></google-youtube>
+                </template>
             </div>
             <template is="dom-if" if="{{listToggle}}">
                 <div id="list" class="layout vertical">
                     <paper-toolbar id="listToolbar" class="layout horizontal end-justified">
-                        <paper-icon-button icon="av:skip-previous"> </paper-icon-button>
+                        <paper-icon-button icon="av:skip-previous" action-type="prev" on-tap="_handlePlayControl"> </paper-icon-button>
                         <div>
                             <span>{{_computeSelectedIndex(selectedVideoIndex)}}</span><span id="listLength">{{listLength}}</span>
                         </div>
-                        <paper-icon-button icon="av:skip-next"> </paper-icon-button>
+                        <paper-icon-button icon="av:skip-next" action-type="next" on-tap="_handlePlayControl"> </paper-icon-button>
+                        <paper-icon-button icon="av:stop" action-type="stop" on-tap="_handlePlayControl"></paper-icon-button>
                     </paper-toolbar>
                     <div class="layout flex vertical scroll">
-                        <iron-selector selected="{{selectedVideoIndex}}">
+                        <iron-selector id="videoSelector" selected="{{selectedVideoIndex}}">
                             <template is="dom-repeat" id="videoList" items="[[data]]" as="item">
-                                <div class="chip layout horizontal" data-index$="[[index]]">
-                                    <iron-image  src="http://img.youtube.com/vi/-rSW74L-XMA/default.jpg" style="width: 80px; height: 60px;" sizing="cover"></iron-image>
+                                <div class="chip layout horizontal" on-tap="_handleChipTap" data-index$="[[index]]">
+                                    <iron-image  src="http://img.youtube.com/vi/[[item.videoId]]/default.jpg" style="width: 80px; height: 60px;" sizing="cover"></iron-image>
                                     <div class="chip-title flex">[[item.title]]</div>
                                     <paper-ripple recenters style="pointer-events: none;"></paper-ripple>
                                 </div>
@@ -242,24 +266,121 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     type: Number,
                     value: 0
                 },
+                /**
+                 *  Video Playing state
+                 * */
+                playing: {
+                    // true 有影片被選擇
+                    type: Boolean,
+                    value: false,
+                    notify: true,
+                    reflectToAttribute: true
+                },
+                playingVideoId: {
+                    type: String,
+                    reflectToAttribute: true,
+                    readOnly: true
+                },
+                prevPlayedVideo: {
+                    type: String,
+                    readOnly: true
+                },
+                placeholder: {
+                    // true 沒有影片被選擇
+                    type: Boolean,
+                    computed: '_computePlaying(playing)'
+                },
+                startVideoIndex: {
+                    type: Number,
+                    value: 0
+                },
                 selectedVideoIndex: {
-                    type: Number
+                    type: Number,
+                    reflectToAttribute: true
+                },
+                /**
+                 *  Media Query
+                 *  */
+                mobile: {
+                    type: Boolean,
+                    reflectToAttribute: true
                 }
             },
-
-
-            _computeContainerStyle: function(width, height) {
-                return 'width:' + width + '; height:' + height;
+            /**
+             * Public Method
+             * */
+            play: function(id) {
+                if( id === undefined || id === '') {
+                    this.async( function() { this.play(this.data[0].videoId) });
+                };
+                this.toggleAttribute( 'playing', true );
+                this._setPlayingVideoId(id);
             },
-            _computeSelectedIndex: function(index) {
-                return index + 1
+            stop: function(id) {
+                this._setPrevPlayedVideo( this.playingVideoId );
+                this._setPlayingVideoId('');
+                this.toggleAttribute('playing', false);
             },
+            /**
+             * Private Method
+             * */
             _dataChanged: function() {
+                /**  Initialize Moe-video **/
+
+                this.selectedVideoIndex = this.startVideoIndex;
                 this.listLength = this.data.length;
                 if (this.listLength > 1) {
                     this.listToggle = true;
                 }
-                console.log('changed');
+            },
+            _handleHolderTap: function(e){
+                this.play(this.prevPlayedVideo);
+            },
+            _handleChipTap: function(e) {
+                this.play( e.model.item.videoId );
+            },
+            _handlePlayControl: function(e) {
+                var action = Polymer.dom(e).localTarget.getAttribute('action-type');
+                switch(action) {
+                    case 'next':
+                        if( this.selectedVideoIndex === this.data.length - 1) break;
+                        this.selectedVideoIndex++;
+                        this.play(this.data[this.selectedVideoIndex].videoId);
+                        break;
+                    case 'prev':
+                        if( this.selectedVideoIndex === 0) break;
+                        this.selectedVideoIndex--;
+                        this.play(this.data[this.selectedVideoIndex].videoId);
+                        break;
+                    case 'stop':
+                        this.stop();
+                        break;
+                }
+            },
+            _computeContainerStyle: function(width, height) {
+                return 'width:' + width + '; height:' + height;
+            },
+            _computeContainerClass: function(mobile) {
+              if( mobile ) {
+                  return 'layout vertical'
+              } else {
+                  return 'layout horizontal'
+              }
+            },
+            _computeSelectedIndex: function(index) {
+                return index + 1
+            },
+            _computePlaying: function(playing) {
+                return playing? false : true;
+            },
+            _computeHolderTitle: function(index) {
+                return this.data[index].title;
+            },
+            _computeHolderStyle: function(index) {
+                return 'background-image: url(http://img.youtube.com/vi/' + this.data[index].videoId +  '/mqdefault.jpg)';
+            },
+            _computeStartIndex: function(index) {
+                return index;
             }
         });
     })();
