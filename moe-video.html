@@ -193,12 +193,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     <paper-toolbar id="listToolbar" class="layout horizontal end-justified">
                         <paper-icon-button icon="av:skip-previous"> </paper-icon-button>
                         <div>
-                            <span>{{selectedVideoItem}}</span><span id="listLength">{{listLength}}</span>
+                            <span>{{_computeSelectedIndex(selectedVideoIndex)}}</span><span id="listLength">{{listLength}}</span>
                         </div>
                         <paper-icon-button icon="av:skip-next"> </paper-icon-button>
                     </paper-toolbar>
                     <div class="layout flex vertical scroll">
-                        <iron-selector selected="{{selectedVideoItem}}">
+                        <iron-selector selected="{{selectedVideoIndex}}">
                             <template is="dom-repeat" id="videoList" items="[[data]]" as="item">
                                 <div class="chip layout horizontal" data-index$="[[index]]">
                                     <iron-image  src="http://img.youtube.com/vi/-rSW74L-XMA/default.jpg" style="width: 80px; height: 60px;" sizing="cover"></iron-image>
@@ -222,7 +222,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             properties: {
                 data: {
                     type: Array,
-                    value: function() { return [];}
+                    value: function() { return [];},
+                    observer: '_dataChanged'
                 },
                 width: {
                     type: String,
@@ -241,9 +242,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     type: Number,
                     value: 0
                 },
-                selectedVideoItem: {
-                    type: Object,
-                    value: function() { return {}}
+                selectedVideoIndex: {
+                    type: Number
                 }
             },
 
@@ -251,47 +251,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             _computeContainerStyle: function(width, height) {
                 return 'width:' + width + '; height:' + height;
             },
-            _getListLength: function() {
-                return this.listLength = this.data.length;
+            _computeSelectedIndex: function(index) {
+                return index + 1
             },
-            // Element Lifecycle
-            ready: function() {
-                // `ready` is called after all elements have been configured, but
-                // propagates bottom-up. This element's children are ready, but parents
-                // are not.
-                //
-                // This is the point where you should make modifications to the DOM (when
-                // necessary), or kick off any processes the element wants to perform.
-
-                this.data = [{
-                    title: '別再用長射程的狗角了CHAOS有夠難打 ',
-                    videoSrc: 'https://www.youtube.com/watch?v=-rSW74L-XMA'
-                }, {
-                    title: '還有人要連嗎ლ(́◉◞౪◟◉‵ლ)',
-                    videoSrc: 'https://www.youtube.com/watch?v=-rSW74L-XMA'
-                }, {
-                    title: '是不會放1.4的載點喔網路上都死檔了 ',
-                    videoSrc: 'https://www.youtube.com/watch?v=-rSW74L-XMA'
-                }, {
-                    title: 'YouTube 低調推 8K 影片，但你的電腦跑得動嗎?',
-                    videoSrc: 'https://www.youtube.com/watch?v=-rSW74L-XMA'
-                }, {
-                    title: '已經有一種電視叫做Digital Media TV了，普遍被做成4K，灌了Android可以看youtube和facebook。',
-                    videoSrc: 'https://www.youtube.com/watch?v=-rSW74L-XMA'
-                }, {
-                    title: 'f',
-                    videoSrc: 'https://www.youtube.com/watch?v=-rSW74L-XMA'
-                }, {
-                    title: 'g',
-                    videoSrc: 'https://www.youtube.com/watch?v=-rSW74L-XMA'
-                }, {
-                    title: 'h',
-                    videoSrc: 'https://www.youtube.com/watch?v=-rSW74L-XMA'
-                }];
-
-                if (this._getListLength() > 1) {
+            _dataChanged: function() {
+                this.listLength = this.data.length;
+                if (this.listLength > 1) {
                     this.listToggle = true;
                 }
+                console.log('changed');
             }
         });
     })();
