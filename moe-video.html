@@ -411,6 +411,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
             },
             _handleHolderTap: function(e){
+                // if click <a href=#> return
+                if ( e.target.tagName === 'A' ) return;
                 this.play(this.prevPlayedVideo);
             },
             _handleChipTap: function(e) {
