@@ -241,12 +241,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </style>
 
         <iron-media-query query="(max-width: 600px)" query-matches="{{mobile}}"></iron-media-query>
-        <iron-ajax
-                url="https://www.googleapis.com/youtube/v3/videos"
-                params='{"id"="WraWs2qMgdY", "key"="apiKey", "fields"="items(snippet(title))", "part"="snippet"}'
-                handle-as="json"
-                last-response="{{youtubeData}}">
-        </iron-ajax>
+
 
         <div id="container" class$="{{_computeContainerClass(mobile)}}">
             <div id="video" class="flex relative">
