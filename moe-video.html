@@ -85,6 +85,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 background-size: 100%;
                 background-repeat: no-repeat;
                 background-position: center center;
+                overflow: hidden;
             }
             #placeholder::before {
                 content: '';
@@ -246,7 +247,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <div id="container" class$="{{_computeContainerClass(mobile)}}">
             <div id="video" class="flex relative">
 
-                <div id="placeholder" class="fit" hidden$="[[!placeholder]]" on-tap="_handleHolderTap" style$="{{_computeHolderStyle(selectedVideoIndex)}}">
+                <div id="placeholder" class="fit" hidden$="[[!placeholder]]" on-tap="_handleHolderTap">
                     <a id="videoLink" href$="{{_computeHolderHref(selectedVideoIndex)}}" target="_blank">{{_computeHolderTitle(selectedVideoIndex)}}</a>
                     <iron-icon id="playIcon" icon$="{{_computePlayIcon(data)}}"> </iron-icon>
                     <paper-ripple style="pointer-events: none;"></paper-ripple>
@@ -346,7 +347,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 },
                 selectedVideoIndex: {
                     type: Number,
-                    reflectToAttribute: true
+                    reflectToAttribute: true,
+                    observer: '_selectedVideoChanged'
                 },
                 playSupported: {
                     type: Boolean
@@ -409,8 +411,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
              * */
             _dataChanged: function() {
                 /**  Initialize Moe-video **/
-
+                if( this.data === undefined || this.data[0] === undefined ) return;
                 this.selectedVideoIndex = this.startVideoIndex;
+                console.log(this.data);
                 this.listLength = this.data.length;
                 if (this.listLength > 1) {
                     this.listToggle = true;
@@ -493,7 +496,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 return this.data[index].title;
             },
             _computeHolderStyle: function(index) {
-                return 'background-image: url(http://img.youtube.com/vi/' + this.data[index].videoId +  '/mqdefault.jpg)';
+                /** not work in firefox , ie **/
+                // return 'background-image: url(http://img.youtube.com/vi/' + this.data[index].videoId +  '/mqdefault.jpg)';
+
+                return 'http://img.youtube.com/vi/' + this.data[index].videoId +  '/mqdefault.jpg';
             },
             _computeStartIndex: function(index) {
                 return index;
@@ -506,6 +512,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             _mobilePlay: function(e) {
                 /** Failed to execute 'play' on 'HTMLMediaElement': API can only be initiated by a user gesture. **/
                 // e.target.play();
+            },
+            _selectedVideoChanged: function() {
+                this.$.placeholder.style.backgroundImage = "url(https://img.youtube.com/vi/" + this.data[this.selectedVideoIndex].videoId + "/hqdefault.jpg)";
             }
         });
     })();
