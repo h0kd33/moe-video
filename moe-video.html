@@ -265,7 +265,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     <paper-ripple style="pointer-events: none;"></paper-ripple>
                 </div>
                 <template is="dom-if" if="[[playing]]">
-                    <google-youtube id="youtube" height="100%" width="100%" class="fit" video-id="{{playingVideoId}}" autoplay="1"></google-youtube>
+                    <google-youtube
+                            id="youtube"
+                            height="100%"
+                            width="100%"
+                            class="fit"
+                            video-id="{{playingVideoId}}"
+                            autoplay="1"
+                            on-google-youtube-state-change="handleStateChange">
+                    </google-youtube>
                 </template>
             </div>
             <template is="dom-if" if="{{listToggle}}">
@@ -398,6 +406,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this._setPlayingVideoId('');
                 this.toggleAttribute('playing', false);
             },
+
+            handleStateChange: function (ev) {
+                // ended
+                if(_.get(ev, 'detail.data') === 0) {
+                    this._nextVideo();
+                }
+            },
+
             /**
              * Private Method
              * */
@@ -422,18 +438,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 var action = Polymer.dom(e).localTarget.getAttribute('action-type');
                 switch(action) {
                     case 'next':
-                        if( this.selectedVideoIndex === this.data.length - 1) break;
-                        this.selectedVideoIndex++;
-                        this.play(this.data[this.selectedVideoIndex].videoId);
+                        this._nextVideo();
                         break;
                     case 'prev':
-                        if( this.selectedVideoIndex === 0) break;
-                        this.selectedVideoIndex--;
-                        this.play(this.data[this.selectedVideoIndex].videoId);
+                        this._prevVideo();
                         break;
                     case 'stop':
                         this.stop();
                         break;
+                }
+            },
+            _nextVideo: function() {
+                if( this.selectedVideoIndex < this.data.length - 1) {
+                    this.selectedVideoIndex++;
+                    this.play(this.data[this.selectedVideoIndex].videoId);
+                }
+            },
+            _prevVideo: function() {
+                if( this.selectedVideoIndex > 0) {
+                    this.selectedVideoIndex--;
+                    this.play(this.data[this.selectedVideoIndex].videoId);
                 }
             },
             _computePlayIcon: function(data) {
