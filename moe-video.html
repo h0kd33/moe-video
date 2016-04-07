@@ -393,7 +393,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                 console.log( 'Play() Supported:' + this.playSupported);
                                 this.toggleAttribute( 'playing', true );
                                 this._setPlayingVideoId(id);
-                                this.async( function() { this.$$('#youtube').play(); }, 1500);
+                                this.listen( this.$$('#youtube') , 'google-youtube-ready', '_mobilePlay' );
                             }
                         },
                     1);
@@ -496,6 +496,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this.async( function() {
                     this.playSupported = this.$$('#youtube').playsupported;
                 } ,1);
+            },
+            _mobilePlay: function(e) {
+                e.target.play();
             }
         });
     })();
