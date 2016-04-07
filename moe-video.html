@@ -286,10 +286,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         <paper-icon-button icon="av:skip-next" action-type="next" on-tap="_handlePlayControl"> </paper-icon-button>
                         <paper-icon-button icon="av:stop" action-type="stop" on-tap="_handlePlayControl"></paper-icon-button>
                     </paper-toolbar>
-                    <div class="layout flex vertical scroll">
+                    <div id="videoSelectorScroller" class="layout flex vertical scroll">
                         <iron-selector id="videoSelector" selected="{{selectedVideoIndex}}">
                             <template is="dom-repeat" id="videoList" items="[[data]]" as="item">
-                                <div class="chip layout horizontal" on-tap="_handleChipTap" data-index$="[[index]]">
+                                <div class="chip layout horizontal video-selector-item" on-tap="_handleChipTap" data-index$="[[index]]">
                                     <iron-image  src="http://img.youtube.com/vi/[[item.videoId]]/default.jpg" style="width: 80px; height: 60px;" sizing="cover"></iron-image>
                                     <div class="chip-title flex">[[item.title]]</div>
                                     <paper-ripple recenters style="pointer-events: none;"></paper-ripple>
@@ -376,6 +376,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
              * Public Method
              * */
             play: function(id) {
+                // if undeinfed
+                // play 0
                 if( id === undefined || id === '') {
                     if (!this.data || !_.get(this.data, '0.videoId')) {
                         return;
@@ -385,6 +387,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     });
                     return; // End
                 }
+
                 if ( this.mobile ) {
                     this._checkPlaySupport();
                     this.async(
@@ -451,14 +454,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             _nextVideo: function() {
                 if( this.selectedVideoIndex < this.data.length - 1) {
                     this.selectedVideoIndex++;
-                    this.play(this.data[this.selectedVideoIndex].videoId);
+                } else {
+                    this.selectedVideoIndex = 0;
+                }
+
+                var videoId = _.get(this.data, this.selectedVideoIndex + ".videoId");
+                if (videoId) {
+                    this.play(videoId);
+                    this._scrollToSelectedVideo();
+                } else {
+                    console.warn("videoId not found at data[selectedVideoIndex]: " + this.selectedVideoIndex);
                 }
             },
             _prevVideo: function() {
                 if( this.selectedVideoIndex > 0) {
                     this.selectedVideoIndex--;
                     this.play(this.data[this.selectedVideoIndex].videoId);
+                    this._scrollToSelectedVideo();
                 }
+            },
+            _scrollToSelectedVideo: function() {
+                var videoSelectorScroller = this.$$("#videoSelectorScroller");
+                var videoSelector = this.$$("#videoSelector");
+                var videoSelectorItem = this.$$('.video-selector-item[data-index="' + this.selectedVideoIndex + '"]');
+                videoSelectorScroller.scrollTop = videoSelectorItem.offsetTop - videoSelectorItem.offsetHeight;
             },
             _computePlayIcon: function(data) {
                 if( !data[0] || data === undefined ){
