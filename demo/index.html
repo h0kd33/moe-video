@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="../bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
-    <link rel="import" href="moe-video.html">
+    <script src="../../bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+    <link rel="import" href="../moe-video.html">
     <style type="text/css" media="screen">
         body {
             background: rgb(255, 255, 238);
@@ -13,12 +13,24 @@
 </head>
 
 <body is="dom-bind">
-<moe-video></moe-video>
+
+<moe-video class="single"></moe-video>
+<moe-video class="multi"></moe-video>
 </body>
 <script>
     (function () {
+
         setTimeout(function() {
-            document.querySelector('moe-video').data = [{
+            document.querySelector('moe-video.single').data = [{
+                title: '別再用長射程的狗角了CHAOS有夠難打 ',
+                type: 'youtube',
+                videoId: '-rSW74L-XMA'
+            }];
+
+        }, 500);
+
+        setTimeout(function() {
+            document.querySelector('moe-video.multi').data = [{
                 title: '別再用長射程的狗角了CHAOS有夠難打 ',
                 type: 'youtube',
                 videoId: '-rSW74L-XMA'
@@ -52,7 +64,7 @@
                 videoId: '_L2zXi-yLcU'
             }];
 
-        }, 5000);
+        }, 2000);
 
     })();
 </script>

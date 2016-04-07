@@ -7,30 +7,32 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
-<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="bower_components/polymer/polymer.html">
 
-<link rel="import" href="../bower_components/iron-icons/av-icons.html">
-<link rel="import" href="../bower_components/iron-icons/notification-icons.html">
-<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
-<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
-<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="../bower_components/iron-image/iron-image.html">
-<link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
+<link rel="import" href="bower_components/iron-icons/av-icons.html">
+<link rel="import" href="bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="bower_components/iron-image/iron-image.html">
+<link rel="import" href="bower_components/iron-media-query/iron-media-query.html">
 
-<link rel="import" href="../bower_components/paper-ripple/paper-ripple.html">
-<link rel="import" href="../bower_components/paper-header-panel/paper-header-panel.html">
-<link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
-<link rel="import" href="../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="bower_components/paper-styles/typography.html">
+<link rel="import" href="bower_components/paper-ripple/paper-ripple.html">
+<link rel="import" href="bower_components/paper-header-panel/paper-header-panel.html">
+<link rel="import" href="bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="bower_components/paper-button/paper-button.html">
+<link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
 
-<link rel="import" href="../bower_components/google-youtube/google-youtube.html">
+<link rel="import" href="bower_components/google-youtube/google-youtube.html">
 <link rel="import" href="webkit-scrollbar.html">
 
 <dom-module id="moe-video">
     <template>
         <style include="webkit-scrollbar iron-flex iron-flex-alignment iron-positioning">
             :host {
+                @apply(--paper-font-common-code);
                 display: inline-block;
                 background-color: black;
                 box-sizing: border-box;
@@ -121,6 +123,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 top: 50%;
                 transform: translate(-50%, -50%);
             }
+            #playIcon[icon*="refresh"] {
+                width: 2em;
+                height: 2em;
+                -webkit-animation: loadRotate 1.5294s 20 linear;
+                -moz-animation: loadRotate 1.5294s 20 linear;
+                animation: loadRotate 1.5294s 20 linear;
+                margin-left: -1em;
+                margin-top: -1em;
+            }
+
+            @-webkit-keyframes loadRotate {
+                from { -webkit-transform: rotate(0deg); }
+                to { -webkit-transform: rotate(360deg); }
+            }
+            @-moz-keyframes loadRotate {
+                from { -moz-transform: rotate(0deg); }
+                to { -moz-transform: rotate(360deg); }
+            }
+            @keyframes loadRotate {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
 
             #list {
                 width: 250px;
@@ -205,7 +229,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <div id="video" class="flex relative">
 
                 <div id="placeholder" class="fit" hidden$="[[!placeholder]]" on-tap="_handleHolderTap" style$="{{_computeHolderStyle(selectedVideoIndex)}}">
-                    <a id="videoLink" href="#">{{_computeHolderTitle(selectedVideoIndex)}}</a>
+                    <a id="videoLink" href$="{{_computeHolderHref(selectedVideoIndex)}}" target="_blank">{{_computeHolderTitle(selectedVideoIndex)}}</a>
                     <iron-icon id="playIcon" icon$="{{_computePlayIcon(data)}}"> </iron-icon>
                     <paper-ripple style="pointer-events: none;"></paper-ripple>
                 </div>
@@ -261,8 +285,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 },
                 listToggle: {
                     type: Boolean,
-                    value: false,
-                    notify: true
+                    value: false
                 },
                 listLength: {
                     type: Number,
@@ -361,9 +384,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             },
             _computePlayIcon: function(data) {
                 if( !data[0] || data === undefined ){
-                    return 'notification:wifi';
+                    return 'icons:refresh';
                 } else {
-
                     return 'av:play-arrow';
                 }
             },
@@ -382,6 +404,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             },
             _computePlaying: function(playing) {
                 return playing? false : true;
+            },
+            _computeHolderHref: function(index) {
+                return "https://www.youtube.com/watch?v=" + this.data[index].videoId;
             },
             _computeHolderTitle: function(index) {
                 return this.data[index].title;
