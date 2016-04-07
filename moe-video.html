@@ -28,6 +28,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="bower_components/google-youtube/google-youtube.html">
 <link rel="import" href="webkit-scrollbar.html">
 
+<script src="bower_components/lodash/dist/lodash.min.js"></script>
+
 <dom-module id="moe-video">
     <template>
         <style include="webkit-scrollbar iron-flex iron-flex-alignment iron-positioning">
@@ -338,8 +340,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
              * */
             play: function(id) {
                 if( id === undefined || id === '') {
+                    if (!this.data || !_.get(this.data, '0.videoId')) {
+                        return;
+                    }
                     this.async( function() { this.play(this.data[0].videoId) });
-                };
+                }
                 this.toggleAttribute( 'playing', true );
                 this._setPlayingVideoId(id);
             },
