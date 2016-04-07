@@ -277,7 +277,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         <iron-selector id="videoSelector" selected="{{selectedVideoIndex}}">
                             <template is="dom-repeat" id="videoList" items="[[data]]" as="item">
                                 <div class="chip layout horizontal video-selector-item" on-tap="_handleChipTap" data-index$="[[index]]">
-                                    <iron-image  src="http://img.youtube.com/vi/[[item.videoId]]/default.jpg" style="width: 80px; height: 60px;" sizing="cover"></iron-image>
+                                    <iron-image  src="[[item.thumb]]" style="width: 80px; height: 60px;" sizing="cover"></iron-image>
                                     <div class="chip-title flex">[[item.title]]</div>
                                     <paper-ripple recenters style="pointer-events: none;"></paper-ripple>
                                 </div>
@@ -366,11 +366,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 // if undeinfed
                 // play 0
                 if( id === undefined || id === '') {
-                    if (!this.data || !_.get(this.data, '0.videoId')) {
+                    if (!this.data || !_.get(this.data, '0.res_id')) {
                         return;
                     }
                     this.async( function() {
-                        this.play(this.data[0].videoId);
+                        this.play(this.data[0].res_id);
                     });
                     return; // End
                 }
@@ -422,7 +422,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this.play(this.prevPlayedVideo);
             },
             _handleChipTap: function(e) {
-                this.play( e.model.item.videoId );
+                this.play( e.model.item.res_id );
             },
             _handlePlayControl: function(e) {
                 var action = Polymer.dom(e).localTarget.getAttribute('action-type');
@@ -445,7 +445,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     this.selectedVideoIndex = 0;
                 }
 
-                var videoId = _.get(this.data, this.selectedVideoIndex + ".videoId");
+                var videoId = _.get(this.data, this.selectedVideoIndex + ".res_id");
                 if (videoId) {
                     this.play(videoId);
                     this._scrollToSelectedVideo();
@@ -456,7 +456,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             _prevVideo: function() {
                 if( this.selectedVideoIndex > 0) {
                     this.selectedVideoIndex--;
-                    this.play(this.data[this.selectedVideoIndex].videoId);
+                    this.play(this.data[this.selectedVideoIndex].res_id);
                     this._scrollToSelectedVideo();
                 }
             },
@@ -487,13 +487,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 return playing? false : true;
             },
             _computeHolderHref: function(index) {
-                return "https://www.youtube.com/watch?v=" + this.data[index].videoId;
+                return "https://www.youtube.com/watch?v=" + this.data[index].res_id;
             },
             _computeHolderTitle: function(index) {
                 return this.data[index].title;
             },
             _computeHolderStyle: function(index) {
-                return 'background-image: url(http://img.youtube.com/vi/' + this.data[index].videoId +  '/mqdefault.jpg)';
+                return 'background-image: url(' + this.data[index].thumb +  ')';
             },
             _computeStartIndex: function(index) {
                 return index;
