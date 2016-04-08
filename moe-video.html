@@ -17,7 +17,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="bower_components/iron-image/iron-image.html">
 <link rel="import" href="bower_components/iron-media-query/iron-media-query.html">
 
-<link rel="import" href="bower_components/paper-styles/typography.html">
 <link rel="import" href="bower_components/paper-ripple/paper-ripple.html">
 <link rel="import" href="bower_components/paper-toolbar/paper-toolbar.html">
 <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
@@ -31,9 +30,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <template>
         <style include="webkit-scrollbar iron-flex iron-flex-alignment iron-positioning">
             :host {
-                @apply(--paper-font-common-code);
+                font-family: Helvetica, Arial, 'LiHei Pro', 'Meiryo','微軟正黑體', '新細明體', sans-serif;
                 display: inline-block;
-                background-color: black;
                 box-sizing: border-box;
                 -webkit-user-select: none;
                 -moz-user-select: none;
@@ -44,13 +42,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             #container {
                 margin: 0;
-                width: 730px;
+                width: 640px;
                 height: 360px;
                 @apply(--layout-horizontal);
             }
-
+            :host[list-toggle] #container{
+                width: 730px;
+                height: 360px;
+            }
             #video {
-
+                background-color: black;
             }
             #video google-youtube {
                 --google-youtube-container: {
@@ -60,7 +61,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
             #videoLink {
                 position: absolute;
-                font-size: 15px;
+                font-size: 18px;
                 color: rgb(200, 200, 200);
                 left: 0;
                 top: 0;
@@ -92,28 +93,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 display: block;
                 position: absolute;
                 top: 0; right: 0; bottom: 0; left: 0;
-                background: rgba(0, 0, 0, 1);
-                /* Old Browsers */
 
-                background: -moz-linear-gradient(top, rgba(0, 0, 0, 1) 0%, rgba(246, 246, 246, 0.47) 53%, rgba(255, 255, 255, 0) 100%);
-                /* FF3.6+ */
-
-                background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(0, 0, 0, 1)), color-stop(53%, rgba(246, 246, 246, 0.47)), color-stop(100%, rgba(255, 255, 255, 0)));
-                /* Chrome, Safari4+ */
-
-                background: -webkit-linear-gradient(top, rgba(0, 0, 0, 1) 0%, rgba(246, 246, 246, 0.47) 53%, rgba(255, 255, 255, 0) 100%);
-                /* Chrome10+,Safari5.1+ */
-
-                background: -ms-linear-gradient(top, rgba(0, 0, 0, 1) 0%, rgba(246, 246, 246, 0.47) 53%, rgba(255, 255, 255, 0) 100%);
-                /* IE 10+ */
-
-                background: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(246, 246, 246, 0.47) 53%, rgba(255, 255, 255, 0) 100%);
-                /* W3C */
-
-                filter: progid: DXImageTransform.Microsoft.gradient( startColorstr='#000000', endColorstr='#ffffff', GradientType=0);
-                /* IE6-9 */
+                /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#000000+0,000000+100&0.29+0,0+31,0+31 */
+                background: -moz-linear-gradient(top,  rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 31%, rgba(0,0,0,0) 100%); /* FF3.6-15 */
+                background: -webkit-linear-gradient(top,  rgba(0,0,0,0.5) 0%,rgba(0,0,0,0) 31%,rgba(0,0,0,0) 100%); /* Chrome10-25,Safari5.1-6 */
+                background: linear-gradient(to bottom,  rgba(0,0,0,0.5) 0%,rgba(0,0,0,0) 31%,rgba(0,0,0,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
             }
-
+            #placeholder:hover #playIcon {
+                width: 7em;
+                height: 7em;
+                transition: 0.1s ease-out;
+            }
             #playIcon {
                 position: absolute;
                 color: rgba(255, 255, 255, 1);
@@ -160,11 +150,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 --paper-toolbar-color: rgb(200, 200, 200);
                 height: 30px;
             }
-
-            #listToolbar::content .toolbar-tools {
-                height: 30px;
+            #listToolbar > {
+                display: inline-block;
             }
-
+            #listToolbar > :last-child {
+                margin-left: auto;
+                display: block;
+            }
             #listLength::before {
                 content: '/';
                 padding: 0 4px;
@@ -243,7 +235,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         <iron-media-query query="(max-width: 600px)" query-matches="{{mobile}}"></iron-media-query>
 
-
         <div id="container" class$="{{_computeContainerClass(mobile)}}">
             <div id="video" class="flex relative">
 
@@ -260,20 +251,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             class="fit"
                             video-id="{{playingVideoId}}"
                             autoplay="1"
-                            on-google-youtube-state-change="handleStateChange">
+                            on-google-youtube-state-change="_handleStateChanged">
                     </google-youtube>
                 </template>
             </div>
             <template is="dom-if" if="{{listToggle}}">
                 <div id="list" class="layout vertical">
-                    <paper-toolbar id="listToolbar" class="layout horizontal end-justified">
+                    <div id="listToolbar" class="layout horizontal center">
                         <paper-icon-button icon="av:skip-previous" action-type="prev" on-tap="_handlePlayControl"> </paper-icon-button>
                         <div>
                             <span>{{_computeSelectedIndex(selectedVideoIndex)}}</span><span id="listLength">{{listLength}}</span>
                         </div>
                         <paper-icon-button icon="av:skip-next" action-type="next" on-tap="_handlePlayControl"> </paper-icon-button>
-                        <paper-icon-button icon="av:stop" action-type="stop" on-tap="_handlePlayControl"></paper-icon-button>
-                    </paper-toolbar>
+                        <paper-icon-button icon="icons:close" action-type="stop" on-tap="_handlePlayControl"></paper-icon-button>
+                    </div>
                     <div id="videoSelectorScroller" class="layout flex vertical scroll">
                         <iron-selector id="videoSelector" selected="{{selectedVideoIndex}}">
                             <template is="dom-repeat" id="videoList" items="[[data]]" as="item">
@@ -287,6 +278,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     </div>
                 </div>
             </template>
+            <!--close button -->
+            <paper-icon-button icon="icons:close" action-type="stop" on-tap="_handlePlayControl" hidden$="{{listToggle}}" style="color: maroon;"></paper-icon-button>
+
         </div>
     </template>
     <script>
@@ -343,6 +337,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 },
                 startVideoIndex: {
                     type: Number,
+                    /** BUG: not initialize in firefox , ie **/
                     value: 0
                 },
                 selectedVideoIndex: {
@@ -382,7 +377,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     this.async(
                         function() {
                             if(this.playSupported) {
-                                console.log( 'Play() Supported:' + this.playSupported);
+                                // console.log( 'Play() Supported:' + this.playSupported);
                                 this.toggleAttribute( 'playing', true );
                                 this._setPlayingVideoId(id);
                                 this.listen( this.$$('#youtube') , 'google-youtube-ready', '_mobilePlay' );
@@ -399,24 +394,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this.toggleAttribute('playing', false);
             },
 
-            handleStateChange: function (ev) {
-                // ended
-                if(_.get(ev, 'detail.data') === 0) {
-                    this._nextVideo();
-                }
-            },
-
             /**
              * Private Method
              * */
             _dataChanged: function() {
                 /**  Initialize Moe-video **/
                 if( this.data === undefined || this.data[0] === undefined ) return;
-                this.selectedVideoIndex = this.startVideoIndex;
-                console.log(this.data);
+                this.selectedVideoIndex = this.startVideoIndex ? this.startVideoIndex : 0;
                 this.listLength = this.data.length;
                 if (this.listLength > 1) {
-                    this.listToggle = true;
+                    this.toggleAttribute('list-toggle', true);
+                }
+            },
+            _selectedVideoChanged: function() {
+                this.$.placeholder.style.backgroundImage = "url(" +  this.data[this.selectedVideoIndex].thumb + ")";
+            },
+            _handleStateChanged: function (ev) {
+                // ended
+                if(_.get(ev, 'detail.data') === 0) {
+                    this._nextVideo();
                 }
             },
             _handleHolderTap: function(e){
@@ -495,10 +491,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             _computeHolderTitle: function(index) {
                 return this.data[index].title;
             },
-            _computeHolderStyle: function(index) {
-                /** not work in firefox , ie **/
-                // return 'background-image: url(http://img.youtube.com/vi/' + this.data[index].videoId +  '/mqdefault.jpg)';
-            },
             _computeStartIndex: function(index) {
                 return index;
             },
@@ -510,9 +502,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             _mobilePlay: function(e) {
                 /** Failed to execute 'play' on 'HTMLMediaElement': API can only be initiated by a user gesture. **/
                 // e.target.play();
-            },
-            _selectedVideoChanged: function() {
-                this.$.placeholder.style.backgroundImage = "url(" +  this.data[this.selectedVideoIndex].thumb + ")";
             }
         });
     })();
