@@ -21,5 +21,8 @@
     "google-youtube": "GoogleWebComponents/google-youtube#^1.2.1",
     "polymer": "Polymer/polymer#^1.4.0",
     "lodash": "^4.8.2"
+  },
+  "devDependencies": {
+    "web-component-tester": "^4.2.2"
   }
 }
